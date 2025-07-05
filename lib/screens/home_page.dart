@@ -21,12 +21,12 @@ class HomePage extends StatelessWidget {
     title: Container(
   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
   decoration: BoxDecoration(
-    color: const Color(0xFF3B2314).withOpacity(0.55), // brown @ ~55 % opacity
+    color: const Color.fromARGB(255, 200, 187, 146), 
     borderRadius: BorderRadius.circular(24),
   ),
   child: const Text(
-    'my libraries',
-    style: TextStyle(color: Color(0xFFFFD7A0)),
+    'My Libraries',
+    style: TextStyle(color: Color(0xFF3B2314)),
   ),
 ),
     backgroundColor: Colors.transparent,
@@ -38,12 +38,17 @@ extendBodyBehindAppBar: true,
 
       body: Stack(
   children: [
+    //Positioned.fill(
+      //child: Image.asset(
+       // 'assets/splash/frame2.jpg',
+      //  fit: BoxFit.cover,
+      //),
+    //),
     Positioned.fill(
-      child: Image.asset(
-        'assets/splash/frame2.jpg',
-        fit: BoxFit.cover,
-      ),
+  child: Container(
+      color: const Color(0xFF3B2314).withOpacity(0.55), // ← pick any colour here
     ),
+  ),
     Positioned.fill(child: Container(color:Colors.black.withOpacity(0.4)),),
     Padding(
       padding: const EdgeInsets.all(16),

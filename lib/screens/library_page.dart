@@ -5,6 +5,12 @@ import '../models/book.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:barcode_scan2/barcode_scan2.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+final titleC = TextEditingController();
+final authorC = TextEditingController();
+final genreC = TextEditingController();
+
 
 
 class LibraryPage extends StatefulWidget {
@@ -31,7 +37,7 @@ class LibraryPageState extends State<LibraryPage> {
           b.title.toLowerCase().contains(query.toLowerCase()) ||
           b.author.toLowerCase().contains(query.toLowerCase())
         ).toList();
-        backgroundColor: const Color(0xFF3B2314);
+      //  backgroundColor: const Color(0xFF3B2314);
     return Scaffold(
       backgroundColor: const Color(0xFF8B6E4E).withOpacity(0.9),
       
@@ -195,3 +201,41 @@ class LibraryPageState extends State<LibraryPage> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error fetching book info.')));
     }
   }
+
+Future<void> onScanPressed(
+  BuildContext context,
+  TextEditingController titleC,
+  TextEditingController authorC,
+  TextEditingController genreC,
+) async {
+  // 1️⃣ ask for camera permission at runtime
+  if (!await Permission.camera.request().isGranted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Camera permission is required.')),
+    );
+    return;
+  }
+
+  // 2️⃣ start the barcode scanner with proper formats
+final result = await BarcodeScanner.scan(
+  options: ScanOptions(
+    restrictFormat: [
+      BarcodeFormat.ean13,
+      BarcodeFormat.ean8,
+      //BarcodeFormat.upcE,   // ← valid enum
+    ],
+  ),
+);
+
+  // 3️⃣ hand the raw content to _fetchBookInfo
+if (result.type == ResultType.Barcode && result.rawContent.isNotEmpty) {
+  await _fetchBookInfo(result.rawContent, titleC, authorC, genreC, context);
+  if (!context.mounted) return;
+} else if (result.type == ResultType.Error) {
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context)
+      .showSnackBar(SnackBar(content: Text('Scan error: ${result.rawContent}')));
+}
+
+
+}
